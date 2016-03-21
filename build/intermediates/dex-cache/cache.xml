@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/richard/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.6.1/b9d63507329a7178e026fc334f87587ee5070ac5/gson-2.6.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="b9d63507329a7178e026fc334f87587ee5070ac5">
+        <dex dex="/home/richard/AndroidStudioProjects/MovieProject/app/build/intermediates/pre-dexed/debug/gson-2.6.1_3faac474866853d7c767bf2f003a116731510d01.jar" />
+    </item>
+    <item
+        jar="/home/richard/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="/home/richard/AndroidStudioProjects/MovieProject/app/build/intermediates/pre-dexed/debug/okio-1.6.0_473fbb2b56c706dad4838979204e61cbaa76250c.jar" />
+    </item>
+    <item
+        jar="/home/richard/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.2.0/f7873a2ebde246a45c2a8d6f3247108b4c88a879/okhttp-3.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f7873a2ebde246a45c2a8d6f3247108b4c88a879">
+        <dex dex="/home/richard/AndroidStudioProjects/MovieProject/app/build/intermediates/pre-dexed/debug/okhttp-3.2.0_036bae5e320fbec4c79f6295ce3bf95864e917a4.jar" />
+    </item>
+    <item
+        jar="/home/richard/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/retrofit/2.0.0/5c06d197fb7fa875ad452f562e3310dd9949d066/retrofit-2.0.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="5c06d197fb7fa875ad452f562e3310dd9949d066">
+        <dex dex="/home/richard/AndroidStudioProjects/MovieProject/app/build/intermediates/pre-dexed/debug/retrofit-2.0.0_4a5eb9a67fa5680f72c6fad0883040b60d89b2f7.jar" />
+    </item>
+    <item
+        jar="/home/richard/.gradle/caches/modules-2/files-2.1/com.squareup.retrofit2/converter-gson/2.0.0/49eb3ad545e7701234e4dd83db8dc1344b577f23/converter-gson-2.0.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="49eb3ad545e7701234e4dd83db8dc1344b577f23">
+        <dex dex="/home/richard/AndroidStudioProjects/MovieProject/app/build/intermediates/pre-dexed/debug/converter-gson-2.0.0_2ae69d9130b2ac8e06d6434f8679d7f1307524f0.jar" />
+    </item>
+
+</items>
