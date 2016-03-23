@@ -15,11 +15,9 @@ public class Movies {
 
     public class Result {
         private String posterPath;
-        private Boolean adult;
         private String overview;
         private String releaseDate;
         private Integer id;
-        private String originalLanguage;
         private String title;
         private String backdropPath;
         private Double popularity;
@@ -28,10 +26,6 @@ public class Movies {
 
         public String getPosterPath() {
             return posterPath;
-        }
-
-        public Boolean getAdult() {
-            return adult;
         }
 
         public String getOverview() {
@@ -46,9 +40,6 @@ public class Movies {
             return id;
         }
 
-        public String getOriginalLanguage() {
-            return originalLanguage;
-        }
 
         public String getTitle() {
             return title;

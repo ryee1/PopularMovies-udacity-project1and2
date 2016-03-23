@@ -24,6 +24,9 @@
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <provider
+            android:authorities="com.udacity.richard.movieproject"
+            android:name=".data.MoviesProvider"/>
     </application>
 
 </manifest>
