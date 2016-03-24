@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 
 /**
@@ -14,6 +15,7 @@ import android.net.Uri;
  */
 public class MoviesProvider extends ContentProvider {
 
+    private static final String LOG_TAG = MoviesProvider.class.getSimpleName();
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDbHelper mOpenHelper;
 
@@ -25,14 +27,15 @@ public class MoviesProvider extends ContentProvider {
         final String authority = MoviesContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST, MOVIES_LIST);
-        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/'" +
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/" +
                 MoviesContract.MoviesListContract.CATEGORY_POPULAR, MOVIES_LIST_POPULAR);
         // TODO add more URIs here
 
         return matcher;
     }
 
-    private static final String sMoviesListCategorySelection = "? = 1";
+    private static final String sMoviesListPopularSelection =
+            MoviesContract.MoviesListContract.COLUMN_IS_POPULAR + "= 1";
 
     private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder){
         return mOpenHelper.getReadableDatabase().query(
@@ -48,12 +51,11 @@ public class MoviesProvider extends ContentProvider {
     private Cursor getMoviesListByCategory(Uri uri, String[] projection, String sortOrder){
         String category = MoviesContract.MoviesListContract.getCategoryFromUri(uri);
 
-        String[] selectionArgs;
-        String selection = sMoviesListCategorySelection;
+        String selection;
 
         switch(category){
             case MoviesContract.MoviesListContract.CATEGORY_POPULAR:
-                selectionArgs = new String[]{MoviesContract.MoviesListContract.COLUMN_IS_POPULAR};
+                selection = sMoviesListPopularSelection;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -63,7 +65,7 @@ public class MoviesProvider extends ContentProvider {
                 MoviesContract.MoviesListContract.TABLE_NAME,
                 projection,
                 selection,
-                selectionArgs,
+                null,
                 null,
                 null,
                 sortOrder
@@ -83,6 +85,7 @@ public class MoviesProvider extends ContentProvider {
         switch(sUriMatcher.match(uri)){
             case MOVIES_LIST:
                 retCursor = getMoviesListAll(uri, projection, sortOrder);
+                Log.e(LOG_TAG, "Cursor count" + retCursor.getCount());
                 break;
             case MOVIES_LIST_POPULAR:
                 retCursor = getMoviesListByCategory(uri, projection, sortOrder);

@@ -14,26 +14,26 @@ public class Movies {
     }
 
     public class Result {
-        private String posterPath;
+        private String poster_path;
         private String overview;
-        private String releaseDate;
+        private String release_date;
         private Integer id;
         private String title;
-        private String backdropPath;
+        private String backdrop_path;
         private Double popularity;
-        private Integer voteCount;
-        private Double voteAverage;
+        private Integer vote_count;
+        private Double vote_average;
 
-        public String getPosterPath() {
-            return posterPath;
+        public String getPoster_path() {
+            return poster_path;
         }
 
         public String getOverview() {
             return overview;
         }
 
-        public String getReleaseDate() {
-            return releaseDate;
+        public String getRelease_date() {
+            return release_date;
         }
 
         public Integer getId() {
@@ -45,20 +45,22 @@ public class Movies {
             return title;
         }
 
-        public String getBackdropPath() {
-            return backdropPath;
+        public String getBackdrop_path() {
+            return backdrop_path;
         }
 
         public Double getPopularity() {
             return popularity;
         }
 
-        public Integer getVoteCount() {
-            return voteCount;
+        public Integer getVote_count() {
+            return vote_count;
         }
 
-        public Double getVoteAverage() {
-            return voteAverage;
+        public Double getVote_average() {
+            return vote_average;
         }
+
+
     }
 }

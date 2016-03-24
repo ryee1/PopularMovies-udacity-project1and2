@@ -20,6 +20,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         final String SQL_CREATE_MOVIES_LIST_TABLE = "CREATE TABLE " + MoviesListContract.TABLE_NAME
                 + " (" + MoviesListContract._ID + " INTEGER PRIMARY KEY,"
                 + MoviesListContract.COLUMN_TITLE + " TEXT NOT NULL,"
@@ -30,7 +31,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 + MoviesListContract.COLUMN_POPULARITY + " REAL NOT NULL,"
                 + MoviesListContract.COLUMN_RELEASE_DATE + " TEXT NOT NULL,"
                 + MoviesListContract.COLUMN_OVERVIEW + " TEXT NOT NULL,"
-                + MoviesListContract.COLUMN_IS_POPULAR + " INTEGER NOT NULL"
+                + MoviesListContract.COLUMN_IS_POPULAR + " INTEGER NOT NULL,"
+                + MoviesListContract.COLUMN_IS_FAVORITES + "INTEGER"
                 + ");";
 
         db.execSQL(SQL_CREATE_MOVIES_LIST_TABLE);

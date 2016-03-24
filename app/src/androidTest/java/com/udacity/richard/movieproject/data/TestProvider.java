@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 /**
  * Created by richard on 3/22/16.
@@ -70,6 +71,21 @@ public class TestProvider extends AndroidTestCase {
                 null, null, null, null
         );
         TestUtilities.validateCursor("testBasicMoviesListQuery", moviesCursor, expectedValues);
+    }
+
+    public void testPopularMoviesListQuery(){
+        MoviesDbHelper dbHelper= new MoviesDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues expectedValues = TestUtilities.createMoviesListValues();
+        long MoviesListRowId = TestUtilities.insertMoviesListValues(mContext);
+        db.close();
+
+        Cursor moviesCursor = mContext.getContentResolver().query(
+                MoviesContract.MoviesListContract.buildPopularListUri(),
+                null, null, null, null
+        );
+        TestUtilities.validateCursor("testPopularMoviesListQuery", moviesCursor, expectedValues);
     }
 
     public void testInsertReadProvider(){
