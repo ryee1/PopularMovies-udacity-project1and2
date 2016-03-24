@@ -22,7 +22,7 @@ public class MoviesProvider extends ContentProvider {
     static final int MOVIES_LIST = 100;
     static final int MOVIES_LIST_POPULAR = 101;
 
-    static UriMatcher buildUriMatcher(){
+    static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MoviesContract.CONTENT_AUTHORITY;
 
@@ -37,7 +37,7 @@ public class MoviesProvider extends ContentProvider {
     private static final String sMoviesListPopularSelection =
             MoviesContract.MoviesListContract.COLUMN_IS_POPULAR + "= 1";
 
-    private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder){
+    private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 MoviesContract.MoviesListContract.TABLE_NAME,
                 projection,
@@ -48,12 +48,13 @@ public class MoviesProvider extends ContentProvider {
                 sortOrder
         );
     }
-    private Cursor getMoviesListByCategory(Uri uri, String[] projection, String sortOrder){
+
+    private Cursor getMoviesListByCategory(Uri uri, String[] projection, String sortOrder) {
         String category = MoviesContract.MoviesListContract.getCategoryFromUri(uri);
 
         String selection;
 
-        switch(category){
+        switch (category) {
             case MoviesContract.MoviesListContract.CATEGORY_POPULAR:
                 selection = sMoviesListPopularSelection;
                 break;
@@ -82,7 +83,7 @@ public class MoviesProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
-        switch(sUriMatcher.match(uri)){
+        switch (sUriMatcher.match(uri)) {
             case MOVIES_LIST:
                 retCursor = getMoviesListAll(uri, projection, sortOrder);
                 Log.e(LOG_TAG, "Cursor count" + retCursor.getCount());
@@ -93,7 +94,8 @@ public class MoviesProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-    return retCursor;
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Override
@@ -107,11 +109,11 @@ public class MoviesProvider extends ContentProvider {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Uri returnUri;
 
-        switch(sUriMatcher.match(uri)){
+        switch (sUriMatcher.match(uri)) {
             case MOVIES_LIST:
                 long _id = db.insert(MoviesContract.MoviesListContract.TABLE_NAME, null, values);
                 if (_id != -1)
-                    returnUri =  MoviesContract.MoviesListContract.buildMoviesListRowUri(_id);
+                    returnUri = MoviesContract.MoviesListContract.buildMoviesListRowUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -127,8 +129,8 @@ public class MoviesProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
-        if(null == selection) selection = "1";
-        switch(match){
+        if (null == selection) selection = "1";
+        switch (match) {
             case MOVIES_LIST:
                 rowsDeleted = db.delete(MoviesContract.MoviesListContract.TABLE_NAME,
                         selection, selectionArgs);
@@ -136,7 +138,7 @@ public class MoviesProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        if(rowsDeleted != 0){
+        if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return rowsDeleted;
@@ -148,7 +150,7 @@ public class MoviesProvider extends ContentProvider {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Uri returnUri;
         int _id;
-        switch(sUriMatcher.match(uri)){
+        switch (sUriMatcher.match(uri)) {
             case MOVIES_LIST:
                 _id = db.update(MoviesContract.MoviesListContract.TABLE_NAME, values, selection,
                         selectionArgs);
@@ -156,7 +158,7 @@ public class MoviesProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        if(_id != 0)
+        if (_id != 0)
             getContext().getContentResolver().notifyChange(uri, null);
         return _id;
     }

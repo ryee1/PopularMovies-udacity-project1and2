@@ -44,7 +44,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getContext().getContentResolver().delete(MoviesListContract.CONTENT_URI, null, null);
         getLoaderManager().initLoader(MOVIES_LIST_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
