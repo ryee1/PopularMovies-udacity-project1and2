@@ -26,7 +26,9 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <provider
             android:authorities="com.udacity.richard.movieproject"
-            android:name=".data.MoviesProvider"/>
+            android:name=".data.MoviesProvider"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.udacity.richard.movieproject.data.MoviesContract;
 
@@ -28,8 +29,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
     private static final int MOVIES_LIST_LOADER = 0;
+    private ListView mListView;
 
     private static final String[] MOVIES_LIST_COLUMNS = {
+            MoviesListContract._ID,
             MoviesListContract.COLUMN_POSTER_PATH
     };
 
@@ -44,7 +47,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getContext().getContentResolver().delete(MoviesListContract.CONTENT_URI, null, null);
+        //TODO debug
+        getContext().getContentResolver().delete(MoviesContract.MoviesListContract.CONTENT_URI,
+                null, null);
+
         getLoaderManager().initLoader(MOVIES_LIST_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -55,15 +61,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         // Inflate the layout for this fragment
 
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
-        RecyclerView rvMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
 
-        mMovieListAdapter = new MovieListAdapter(getContext());
+        mMovieListAdapter = new MovieListAdapter(getContext(), null, 0);
 
         FetchMoviesTask fmt = new FetchMoviesTask(getContext(), mMovieListAdapter);
         fmt.execute(MoviesListContract.COLUMN_IS_POPULAR);
-
-        rvMovieList.setAdapter(mMovieListAdapter);
-        rvMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mListView = (ListView) view.findViewById(R.id.lvMovieList);
+        mListView.setAdapter(mMovieListAdapter);
         return view;
     }
 
@@ -73,7 +77,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         Log.e(LOG_TAG, MoviesContract.MoviesListContract.CONTENT_URI.toString() );
         return new CursorLoader(getActivity(),
                 MoviesContract.MoviesListContract.CONTENT_URI,
-                MOVIES_LIST_COLUMNS,
+                null,
                 null,
                 null,
                 null);

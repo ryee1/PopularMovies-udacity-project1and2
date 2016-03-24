@@ -11,7 +11,7 @@ import com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     static final String DATABASE_NAME = "movies.db";
 
     public MoviesDbHelper(Context context){
