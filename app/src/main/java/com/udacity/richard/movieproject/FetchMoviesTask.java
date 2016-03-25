@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.udacity.richard.movieproject.api.RestAdapter;
+import com.udacity.richard.movieproject.models.Config;
 import com.udacity.richard.movieproject.models.Movies;
 
 import java.io.IOException;
@@ -25,12 +26,29 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
     private final Context mContext;
-    private Movies mData;
+    private Movies mMoviesListData;
     private MovieListAdapter mAdapter;
 
     public FetchMoviesTask(Context mContext, MovieListAdapter adapter) {
         this.mContext = mContext;
         mAdapter = adapter;
+    }
+
+    private void fetchConfigFromApiIntoSharedPreferences(){
+        Call<Config> call;
+        final Config configData;
+        String baseUrl = "";
+        String[] imagesSize = {};
+
+        call = RestAdapter.getAdapter().getConfig(API_KEY);
+        try{
+            configData = call.execute().body();
+            baseUrl = configData.images.base_url;
+            imagesSize = configData.images.poster_sizes;
+        }catch(IOException e){
+            Log.e(LOG_TAG, "fetchConfigFromApiIntoSharedPreferences IOException");
+        }
+        Utility.putConfigInSharedPreferences(mContext, baseUrl, imagesSize);
     }
 
     private void fetchMoviesfromApi(String category) {
@@ -44,7 +62,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
                 throw new UnsupportedOperationException("Unknown category: " + category);
         }
         try {
-            mData = call.execute().body();
+            mMoviesListData = call.execute().body();
         } catch (IOException e) {
             Log.e(LOG_TAG, "fetchMoviesFromApi IOException");
         }
@@ -54,7 +72,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
 
         List<ContentValues> cvList = new ArrayList<>();
         ContentValues cv;
-        for(Movies.Result result : mData.getResults()){
+        for(Movies.Result result : mMoviesListData.getResults()){
             cv = insertMovieListToContentValues(category, result);
             cvList.add(cv);
         }
@@ -78,7 +96,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
         ContentValues movieValues = new ContentValues();
         title = result.getTitle();
         movie_id = result.getId();
-        poster_path = result.getPoster_path();
+        poster_path = Utility.buildImageUri(mContext, Utility.IMAGE_SIZE_SMALL, result.getPoster_path().substring(1));
         vote_average = result.getVote_average();
         vote_count = result.getVote_count();
         popularity = result.getPopularity();
@@ -107,6 +125,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     @Override
     protected Void doInBackground(String... params) {
         String category = params[0];
+        fetchConfigFromApiIntoSharedPreferences();
         fetchMoviesfromApi(category);
         bulkInsertMoviesList(category);
         return null;
@@ -115,6 +134,5 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        mAdapter.notifyDataSetChanged();
     }
 }

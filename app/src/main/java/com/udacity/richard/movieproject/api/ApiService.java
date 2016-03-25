@@ -1,5 +1,6 @@
 package com.udacity.richard.movieproject.api;
 
+import com.udacity.richard.movieproject.models.Config;
 import com.udacity.richard.movieproject.models.Movies;
 import com.udacity.richard.movieproject.models.Reviews;
 
@@ -13,8 +14,8 @@ import retrofit2.http.Query;
  */
 public interface ApiService {
 
-    //    @GET("configuration")
-//    Call<ConfigModel> getConfig(@Query("api_key") String api_key);
+        @GET("configuration")
+    Call<Config> getConfig(@Query("api_key") String api_key);
 
     @GET("movie/popular")
     Call<Movies> getPopular(@Query("api_key") String api_key);

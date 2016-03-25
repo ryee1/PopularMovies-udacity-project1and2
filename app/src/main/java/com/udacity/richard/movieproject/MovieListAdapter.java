@@ -3,11 +3,14 @@ package com.udacity.richard.movieproject;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.udacity.richard.movieproject.data.MoviesContract;
 import com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
 
@@ -18,8 +21,13 @@ import java.util.List;
  */
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.ViewHolder> {
 
+    private static final String LOG_TAG = MovieListAdapter.class.getSimpleName();
     private Cursor mCursor;
     final private Context mContext;
+
+    private int mWidth;
+    private int mHeight;
+
 
     public MovieListAdapter(Context context){
         mContext = context;
@@ -34,6 +42,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         else {
             throw new RuntimeException("Not bound to RecyclerView");
         }
+        mWidth = parent.getWidth();
+        mHeight = parent.getHeight();
         return new ViewHolder(movieListView);
        }
 
@@ -41,10 +51,15 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     public void onBindViewHolder(MovieListAdapter.ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        TextView movieName = holder.movieName;
+        ImageView moviePoster = holder.moviePoster;
 
         String imageUrl = mCursor.getString(mCursor.getColumnIndex(MoviesListContract.COLUMN_POSTER_PATH));
-        movieName.setText(imageUrl);
+
+        Glide.with(mContext)
+                .load(imageUrl)
+              //  .override(mWidth/2, mHeight /2)
+                .fitCenter()
+                .into(moviePoster);
     }
 
     @Override
@@ -64,10 +79,10 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView movieName;
+        public ImageView moviePoster;
         public ViewHolder(View itemView) {
             super(itemView);
-            movieName = (TextView) itemView.findViewById(R.id.movie_name);
+            moviePoster = (ImageView) itemView.findViewById(R.id.movie_poster_image);
         }
     }
 }

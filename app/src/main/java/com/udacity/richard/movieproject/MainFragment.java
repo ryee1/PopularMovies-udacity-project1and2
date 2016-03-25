@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -62,7 +63,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         fmt.execute(MoviesListContract.COLUMN_IS_POPULAR);
 
         rvMovieList.setAdapter(mMovieListAdapter);
-        rvMovieList.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvMovieList.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        rvMovieList.setHasFixedSize(true);
         return view;
     }
 
