@@ -6,12 +6,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
 
+import static com.udacity.richard.movieproject.data.MoviesContract.*;
+
 /**
  * Created by richard on 3/21/16.
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     static final String DATABASE_NAME = "movies.db";
 
     public MoviesDbHelper(Context context){
@@ -32,7 +34,10 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 + MoviesListContract.COLUMN_RELEASE_DATE + " TEXT NOT NULL,"
                 + MoviesListContract.COLUMN_OVERVIEW + " TEXT NOT NULL,"
                 + MoviesListContract.COLUMN_IS_POPULAR + " INTEGER NOT NULL,"
-                + MoviesListContract.COLUMN_IS_FAVORITES + "INTEGER"
+                + MoviesListContract.COLUMN_IS_FAVORITES + "INTEGER,"
+                + MoviesListContract.COLUMN_IS_TOP_RATED + "INTEGER,"
+                + MoviesListContract.COLUMN_VIDEOS + "TEXT,"
+                + MoviesListContract.COLUMNS_REVIEWS + "TEXT"
                 + ");";
 
         db.execSQL(SQL_CREATE_MOVIES_LIST_TABLE);

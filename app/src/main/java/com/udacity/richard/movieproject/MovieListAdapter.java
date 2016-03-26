@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.udacity.richard.movieproject.data.MoviesContract;
 import com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
 
@@ -25,10 +26,6 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private Cursor mCursor;
     final private Context mContext;
 
-    private int mWidth;
-    private int mHeight;
-
-
     public MovieListAdapter(Context context){
         mContext = context;
     }
@@ -42,22 +39,18 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
         else {
             throw new RuntimeException("Not bound to RecyclerView");
         }
-        mWidth = parent.getWidth();
-        mHeight = parent.getHeight();
         return new ViewHolder(movieListView);
        }
 
     @Override
     public void onBindViewHolder(MovieListAdapter.ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-
         ImageView moviePoster = holder.moviePoster;
 
         String imageUrl = mCursor.getString(mCursor.getColumnIndex(MoviesListContract.COLUMN_POSTER_PATH));
-
         Glide.with(mContext)
                 .load(imageUrl)
-              //  .override(mWidth/2, mHeight /2)
+                .override(Utility.getScreenWidth(mContext)/2,700)
                 .fitCenter()
                 .into(moviePoster);
     }

@@ -1,7 +1,6 @@
 package com.udacity.richard.movieproject;
 
 
-
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.udacity.richard.movieproject.data.MoviesContract;
+import com.udacity.richard.movieproject.sync.MoviesSyncAdapter;
 
 import static com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
 
@@ -52,28 +51,31 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
-        RecyclerView rvMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
+        RecyclerView rVMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
 
         mMovieListAdapter = new MovieListAdapter(getContext());
 
-        FetchMoviesTask fmt = new FetchMoviesTask(getContext(), mMovieListAdapter);
-        fmt.execute(MoviesListContract.COLUMN_IS_POPULAR);
+//        FetchMoviesTask fmt = new FetchMoviesTask(getContext(), mMovieListAdapter);
+//        fmt.execute(MoviesListContract.COLUMN_IS_POPULAR);
 
-        rvMovieList.setAdapter(mMovieListAdapter);
-        rvMovieList.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        rvMovieList.setHasFixedSize(true);
+        MoviesSyncAdapter.syncImmediately(getContext());
+
+        rVMovieList.setAdapter(mMovieListAdapter);
+        rVMovieList.setLayoutManager(new GridLayoutManager(getContext(),
+                getResources().getInteger(R.integer.movies_list_columns)));
         return view;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri popularMoviesList = MoviesListContract.buildPopularListUri();
+
         Log.e(LOG_TAG, MoviesContract.MoviesListContract.CONTENT_URI.toString() );
+
         return new CursorLoader(getActivity(),
-                MoviesContract.MoviesListContract.CONTENT_URI,
+                popularMoviesList,
                 MOVIES_LIST_COLUMNS,
                 null,
                 null,

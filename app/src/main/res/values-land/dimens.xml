@@ -3,5 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <integer name="movies_list_columns">2</integer>
+    <integer name="movies_list_columns">4</integer>
 </resources>

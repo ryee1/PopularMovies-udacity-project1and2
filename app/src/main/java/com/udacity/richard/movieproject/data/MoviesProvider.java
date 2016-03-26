@@ -37,6 +37,15 @@ public class MoviesProvider extends ContentProvider {
     private static final String sMoviesListPopularSelection =
             MoviesContract.MoviesListContract.COLUMN_IS_POPULAR + "= 1";
 
+    private static void resetCategoryColumns(String category){
+
+    }
+
+    //Check for and remove row from table if all category columns and favorites column are zero
+    private static void cleanDatabase(){
+
+    }
+
     private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 MoviesContract.MoviesListContract.TABLE_NAME,

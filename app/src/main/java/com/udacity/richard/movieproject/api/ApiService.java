@@ -3,6 +3,7 @@ package com.udacity.richard.movieproject.api;
 import com.udacity.richard.movieproject.models.Config;
 import com.udacity.richard.movieproject.models.Movies;
 import com.udacity.richard.movieproject.models.Reviews;
+import com.udacity.richard.movieproject.models.Videos;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -20,12 +21,12 @@ public interface ApiService {
     @GET("movie/popular")
     Call<Movies> getPopular(@Query("api_key") String api_key);
 
-//    @GET("movie/top_rated")
-//    Call<Movies> getTopRated(@Query("api_key") String api_key);
+    @GET("movie/top_rated")
+    Call<Movies> getTopRated(@Query("api_key") String api_key);
 
     @GET("movie/{id}/reviews")
     Call<Reviews> getReviews(@Path("id") int id, @Query("api_key") String api_key);
 
-//    @GET("movie/{id}/videos")
-//    Call<VideoModel> getVideos(@Path("id") int id, @Query("api_key") String api_key);
+    @GET("movie/{id}/videos")
+    Call<Videos> getVideos(@Path("id") int id, @Query("api_key") String api_key);
 }

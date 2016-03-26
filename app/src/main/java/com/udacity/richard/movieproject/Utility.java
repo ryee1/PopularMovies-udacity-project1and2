@@ -3,7 +3,9 @@ package com.udacity.richard.movieproject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,5 +72,12 @@ public class Utility {
                 .build().toString();
 
         return url;
+    }
+
+    public static int getScreenWidth(Context context){
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics metrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels;
     }
 }

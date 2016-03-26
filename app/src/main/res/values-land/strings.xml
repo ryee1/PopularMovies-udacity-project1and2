@@ -8,7 +8,4 @@
     <string name="preference_config_key">com.udacity.richard.movieproject.PREFERENCE_CONFIG_KEY</string>
     <string name="config_base_url">CONFIG_BASE_URL</string>
     <string name="config_imagessize_set">CONFIG_IMAGESSIZE_SET</string>
-    <string name="sync_account_type">movieproject.udacity.com</string>
-    <string name="content_authority">com.udacity.richard.movieproject</string>
-
 </resources>
