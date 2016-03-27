@@ -2,6 +2,7 @@ package com.udacity.richard.movieproject;
 
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +14,13 @@ import android.view.ViewGroup;
  */
 public class DetailFragment extends Fragment {
 
-    public static DetailFragment newInstance(){
+    public static final String DETAIL_URI = "com.udacity.richard.movieproject.detail_uri";
+
+    public static DetailFragment newInstance(Parcelable uri){
         DetailFragment f = new DetailFragment();
-//        Bundle args = new Bundle();
-//        args.putInt("index", index);
-//        f.setArguments(args);
+        Bundle args = new Bundle();
+        args.putParcelable(DETAIL_URI, uri);
+        f.setArguments(args);
         return f;
     }
     public DetailFragment() {

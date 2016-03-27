@@ -1,5 +1,8 @@
 package com.udacity.richard.movieproject;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,6 +12,10 @@ import android.view.View;
 
 public class DetailActivity extends AppCompatActivity {
 
+    public static Intent newIntent(Context context, Uri uri){
+        return new Intent(context, DetailActivity.class)
+                .setData(uri);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +36,7 @@ public class DetailActivity extends AppCompatActivity {
             if (savedInstanceState == null) {
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .add(R.id.detail_fragment_container, DetailFragment.newInstance())
+                        .add(R.id.detail_fragment_container, DetailFragment.newInstance(getIntent().getData()))
                         .commit();
             }
         }

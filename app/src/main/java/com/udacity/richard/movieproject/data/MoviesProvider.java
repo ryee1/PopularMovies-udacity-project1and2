@@ -20,22 +20,27 @@ public class MoviesProvider extends ContentProvider {
     private MoviesDbHelper mOpenHelper;
 
     static final int MOVIES_LIST = 100;
-    static final int MOVIES_LIST_POPULAR = 101;
+    static final int MOVIES_LIST_CATEGORY = 101;
+    static final int MOVIES_SELECTION = 200;
+    static final int MOVIES_FAVORITES = 300;
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MoviesContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST, MOVIES_LIST);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/*", MOVIES_LIST_CATEGORY);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/#", MOVIES_SELECTION);
         matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/" +
-                MoviesContract.MoviesListContract.CATEGORY_POPULAR, MOVIES_LIST_POPULAR);
-        // TODO add more URIs here
-
+                MoviesContract.MoviesListContract.CATEGORY_FAVORITES, MOVIES_FAVORITES);
         return matcher;
     }
 
     private static final String sMoviesListPopularSelection =
             MoviesContract.MoviesListContract.COLUMN_IS_POPULAR + "= 1";
+
+    private static final String sMoviesListTopRatedSelection =
+            MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED + "= 1";
 
     private static void resetCategoryColumns(String category){
 
@@ -46,6 +51,28 @@ public class MoviesProvider extends ContentProvider {
 
     }
 
+    private Cursor getMoviesFavorites(Uri uri, String[] projection, String sortOrder){
+        return mOpenHelper.getReadableDatabase().query(
+                MoviesContract.MoviesListContract.TABLE_NAME,
+                projection,
+                MoviesContract.MoviesListContract.CATEGORY_FAVORITES + " = 1",
+                null,
+                null,
+                null,
+                sortOrder
+        );
+    }
+    private Cursor getMovieSelection(Uri uri){
+        return mOpenHelper.getReadableDatabase().query(
+                MoviesContract.MoviesListContract.TABLE_NAME,
+                null,
+                MoviesContract.MoviesListContract.COLUMN_MOVIE_ID + " = ?",
+                new String[]{Long.toString(MoviesContract.MoviesListContract.getMovieIdFromUri(uri))},
+                null,
+                null,
+                null
+        );
+    }
     private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 MoviesContract.MoviesListContract.TABLE_NAME,
@@ -66,6 +93,9 @@ public class MoviesProvider extends ContentProvider {
         switch (category) {
             case MoviesContract.MoviesListContract.CATEGORY_POPULAR:
                 selection = sMoviesListPopularSelection;
+                break;
+            case MoviesContract.MoviesListContract.CATEGORY_TOP_RATED:
+                selection = sMoviesListTopRatedSelection;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -97,8 +127,14 @@ public class MoviesProvider extends ContentProvider {
                 retCursor = getMoviesListAll(uri, projection, sortOrder);
                 Log.e(LOG_TAG, "Cursor count" + retCursor.getCount());
                 break;
-            case MOVIES_LIST_POPULAR:
+            case MOVIES_LIST_CATEGORY:
                 retCursor = getMoviesListByCategory(uri, projection, sortOrder);
+                break;
+            case MOVIES_SELECTION:
+                retCursor = getMovieSelection(uri);
+                break;
+            case MOVIES_FAVORITES:
+                retCursor = getMoviesFavorites(uri, projection, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -179,12 +215,19 @@ public class MoviesProvider extends ContentProvider {
         switch (match) {
             case MOVIES_LIST:
                 db.beginTransaction();
-                int returnCount = 0;
+                int returnCount = 1;
                 try {
                     for (ContentValues value : values) {
-                        long _id = db.insert(MoviesContract.MoviesListContract.TABLE_NAME, null, value);
+                        long _id = db.insertWithOnConflict(MoviesContract.MoviesListContract.TABLE_NAME,
+                                null, value, SQLiteDatabase.CONFLICT_IGNORE);
                         if (_id != -1) {
                             returnCount++;
+                        }
+                        else{
+                            db.update(MoviesContract.MoviesListContract.TABLE_NAME, value,
+                                    MoviesContract.MoviesListContract.COLUMN_MOVIE_ID + " = ?",
+                                    new String[] {Integer.toString(value.getAsInteger
+                                            (MoviesContract.MoviesListContract.COLUMN_MOVIE_ID))});
                         }
                     }
                     db.setTransactionSuccessful();

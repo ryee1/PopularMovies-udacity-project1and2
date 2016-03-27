@@ -26,11 +26,18 @@ import static com.udacity.richard.movieproject.data.MoviesContract.MoviesListCon
  */
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
+
+    public interface Callback {
+        public void onItemSelected(Uri movieIdUri);
+    }
+
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
     private static final int MOVIES_LIST_LOADER = 0;
+    private int mPosition;
 
     private static final String[] MOVIES_LIST_COLUMNS = {
-            MoviesListContract.COLUMN_POSTER_PATH
+            MoviesListContract.COLUMN_POSTER_PATH,
+            MoviesListContract.COLUMN_MOVIE_ID
     };
 
     private MovieListAdapter mMovieListAdapter;
@@ -55,10 +62,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
         RecyclerView rVMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
 
-        mMovieListAdapter = new MovieListAdapter(getContext());
-
-//        FetchMoviesTask fmt = new FetchMoviesTask(getContext(), mMovieListAdapter);
-//        fmt.execute(MoviesListContract.COLUMN_IS_POPULAR);
+        mMovieListAdapter = new MovieListAdapter(getContext(), new MovieListAdapter.MovieListAdapterOnClickHandler(){
+            @Override
+            public void onClick(Long movieId, MovieListAdapter.ViewHolder vh) {
+                ((Callback)getActivity()).onItemSelected(Uri.parse(Long.toString(movieId)));
+                mPosition = vh.getAdapterPosition();
+            }
+        });
 
         MoviesSyncAdapter.syncImmediately(getContext());
 
@@ -70,12 +80,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri popularMoviesList = MoviesListContract.buildPopularListUri();
+        Uri categoryMoviesList = MoviesListContract.buildTopRatedListUri();
 
         Log.e(LOG_TAG, MoviesContract.MoviesListContract.CONTENT_URI.toString() );
 
         return new CursorLoader(getActivity(),
-                popularMoviesList,
+                categoryMoviesList,
                 MOVIES_LIST_COLUMNS,
                 null,
                 null,

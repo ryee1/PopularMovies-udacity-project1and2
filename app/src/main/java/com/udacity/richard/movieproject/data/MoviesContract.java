@@ -17,6 +17,8 @@ public class MoviesContract {
     public static final class MoviesListContract implements BaseColumns {
 
         public static final String CATEGORY_POPULAR = "popular";
+        public static final String CATEGORY_TOP_RATED = "top_rated";
+        public static final String CATEGORY_FAVORITES = "favorites";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI
                 .buildUpon()
@@ -45,10 +47,20 @@ public class MoviesContract {
         public static Uri buildPopularListUri(){
             return CONTENT_URI.buildUpon().appendPath(CATEGORY_POPULAR).build();
         }
+        public static Uri buildTopRatedListUri(){
+            return CONTENT_URI.buildUpon().appendPath(CATEGORY_TOP_RATED).build();
+        }
+
+        public static Uri buildMovieSelectionUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
 
         public static String getCategoryFromUri(Uri uri){
             return uri.getPathSegments().get(1);
         }
 
+        public static long getMovieIdFromUri(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
     }
 }

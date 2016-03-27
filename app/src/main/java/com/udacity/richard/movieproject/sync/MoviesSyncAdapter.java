@@ -42,7 +42,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         fetchConfigFromApiIntoSharedPreferences();
-        bulkInsertMoviesList(fetchMoviesfromApi());
+        bulkInsertMoviesList(fetchMoviesfromApi(MoviesContract.MoviesListContract.COLUMN_IS_POPULAR),
+                fetchMoviesfromApi(MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED));
     }
 
     public static void syncImmediately(Context context) {
@@ -67,8 +68,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
             if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
                 return null;
             }
-
-
         }
         return newAccount;
     }
@@ -90,12 +89,14 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         Utility.putConfigInSharedPreferences(getContext(), baseUrl, imagesSize);
     }
 
-    private Movies fetchMoviesfromApi() {
+    private Movies fetchMoviesfromApi(String category) {
         Call<Movies> call;
-        final Movies returnedData;
-        switch (category_popular) {
+        switch (category) {
             case MoviesContract.MoviesListContract.COLUMN_IS_POPULAR:
                 call = RestAdapter.getAdapter().getPopular(API_KEY);
+                break;
+            case MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED:
+                call = RestAdapter.getAdapter().getTopRated(API_KEY);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown category_popular: " + category_popular);
@@ -108,19 +109,24 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         return null;
     }
 
-    private void bulkInsertMoviesList(Movies moviesListData) {
+    private void bulkInsertMoviesList(Movies popularMoviesListData, Movies topRatedMoviesListData) {
 
-        if(moviesListData == null){
+        if(popularMoviesListData == null && topRatedMoviesListData == null){
             return;
         }
 
         List<ContentValues> cvList = new ArrayList<>();
         ContentValues cv;
-        for(Movies.Result result : moviesListData.getResults()){
+        for(Movies.Result result : popularMoviesListData.getResults()){
             cv = insertMovieListToContentValues(result);
+            cv.put(MoviesContract.MoviesListContract.COLUMN_IS_POPULAR, 1);
             cvList.add(cv);
         }
-
+        for(Movies.Result result : topRatedMoviesListData.getResults()){
+            cv = insertMovieListToContentValues(result);
+            cv.put(MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED, 1);
+            cvList.add(cv);
+        }
         ContentValues[] cvArray = cvList.toArray(new ContentValues[cvList.size()]);
         getContext().getContentResolver()
                 .bulkInsert(MoviesContract.MoviesListContract.CONTENT_URI, cvArray);
@@ -135,7 +141,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         double popularity;
         String release_date;
         String overview;
-        int is_popular;
 
         ContentValues movieValues = new ContentValues();
         title = result.getTitle();
@@ -155,13 +160,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         movieValues.put(MoviesContract.MoviesListContract.COLUMN_POPULARITY, popularity);
         movieValues.put(MoviesContract.MoviesListContract.COLUMN_RELEASE_DATE, release_date);
         movieValues.put(MoviesContract.MoviesListContract.COLUMN_OVERVIEW, overview);
-        switch (category_popular) {
-            case MoviesContract.MoviesListContract.COLUMN_IS_POPULAR:
-                movieValues.put(MoviesContract.MoviesListContract.COLUMN_IS_POPULAR, 1);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown category_popular: " + category_popular);
-        }
 
         return movieValues;
     }

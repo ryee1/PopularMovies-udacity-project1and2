@@ -6,14 +6,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
 
-import static com.udacity.richard.movieproject.data.MoviesContract.*;
-
 /**
  * Created by richard on 3/21/16.
  */
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
     static final String DATABASE_NAME = "movies.db";
 
     public MoviesDbHelper(Context context){
@@ -26,18 +24,18 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_MOVIES_LIST_TABLE = "CREATE TABLE " + MoviesListContract.TABLE_NAME
                 + " (" + MoviesListContract._ID + " INTEGER PRIMARY KEY,"
                 + MoviesListContract.COLUMN_TITLE + " TEXT NOT NULL,"
-                + MoviesListContract.COLUMN_MOVIE_ID + " INTEGER UNIQUE ON CONFLICT REPLACE NOT NULL,"
+                + MoviesListContract.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL,"
                 + MoviesListContract.COLUMN_POSTER_PATH + " TEXT NOT NULL,"
                 + MoviesListContract.COLUMN_VOTE_AVERAGE + " REAL NOT NULL,"
                 + MoviesListContract.COLUMN_VOTE_COUNT + " INTEGER NOT NULL,"
                 + MoviesListContract.COLUMN_POPULARITY + " REAL NOT NULL,"
                 + MoviesListContract.COLUMN_RELEASE_DATE + " TEXT NOT NULL,"
                 + MoviesListContract.COLUMN_OVERVIEW + " TEXT NOT NULL,"
-                + MoviesListContract.COLUMN_IS_POPULAR + " INTEGER NOT NULL,"
-                + MoviesListContract.COLUMN_IS_FAVORITES + "INTEGER,"
-                + MoviesListContract.COLUMN_IS_TOP_RATED + "INTEGER,"
-                + MoviesListContract.COLUMN_VIDEOS + "TEXT,"
-                + MoviesListContract.COLUMNS_REVIEWS + "TEXT"
+                + MoviesListContract.COLUMN_IS_POPULAR + " INTEGER,"
+                + MoviesListContract.COLUMN_IS_FAVORITES + " INTEGER,"
+                + MoviesListContract.COLUMN_IS_TOP_RATED + " INTEGER,"
+                + MoviesListContract.COLUMN_VIDEOS + " TEXT,"
+                + MoviesListContract.COLUMNS_REVIEWS + " TEXT"
                 + ");";
 
         db.execSQL(SQL_CREATE_MOVIES_LIST_TABLE);
