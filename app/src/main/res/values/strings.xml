@@ -10,5 +10,7 @@
     <string name="config_imagessize_set">CONFIG_IMAGESSIZE_SET</string>
     <string name="sync_account_type">movieproject.udacity.com</string>
     <string name="content_authority">com.udacity.richard.movieproject</string>
+    <string name="detail_button_add_favorites">Mark as Favorites</string>
+    <string name="detail_button_remove_favorites">Remove from Favorites</string>
 
 </resources>

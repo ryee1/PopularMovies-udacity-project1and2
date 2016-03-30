@@ -145,7 +145,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues movieValues = new ContentValues();
         title = result.getTitle();
         movie_id = result.getId();
-        poster_path = Utility.buildImageUri(getContext(), Utility.IMAGE_SIZE_SMALL, result.getPoster_path().substring(1));
+        poster_path = Utility.buildImageUri(getContext(), Utility.IMAGE_SIZE_MEDIUM, result.getPoster_path().substring(1));
         vote_average = result.getVote_average();
         vote_count = result.getVote_count();
         popularity = result.getPopularity();

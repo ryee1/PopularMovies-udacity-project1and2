@@ -12,6 +12,8 @@ import android.view.View;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+
     public static Intent newIntent(Context context, Uri uri){
         return new Intent(context, DetailActivity.class)
                 .setData(uri);
@@ -31,7 +33,6 @@ public class DetailActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
         if(findViewById(R.id.detail_fragment_container) != null) {
             if (savedInstanceState == null) {
                 getSupportFragmentManager()

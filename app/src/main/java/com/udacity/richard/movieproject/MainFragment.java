@@ -10,12 +10,10 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.udacity.richard.movieproject.data.MoviesContract;
 import com.udacity.richard.movieproject.sync.MoviesSyncAdapter;
 
 import static com.udacity.richard.movieproject.data.MoviesContract.MoviesListContract;
@@ -28,7 +26,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
 
     public interface Callback {
-        public void onItemSelected(Uri movieIdUri);
+        public void onItemSelected(Long movieId);
     }
 
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
@@ -65,7 +63,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mMovieListAdapter = new MovieListAdapter(getContext(), new MovieListAdapter.MovieListAdapterOnClickHandler(){
             @Override
             public void onClick(Long movieId, MovieListAdapter.ViewHolder vh) {
-                ((Callback)getActivity()).onItemSelected(Uri.parse(Long.toString(movieId)));
+                ((Callback)getActivity()).onItemSelected(movieId);
                 mPosition = vh.getAdapterPosition();
             }
         });
@@ -82,8 +80,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri categoryMoviesList = MoviesListContract.buildTopRatedListUri();
 
-        Log.e(LOG_TAG, MoviesContract.MoviesListContract.CONTENT_URI.toString() );
-
         return new CursorLoader(getActivity(),
                 categoryMoviesList,
                 MOVIES_LIST_COLUMNS,
@@ -94,7 +90,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e(LOG_TAG, "Cursor count:" + data.getCount());
         mMovieListAdapter.swapCursor(data);
     }
 

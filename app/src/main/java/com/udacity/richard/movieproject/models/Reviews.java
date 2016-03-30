@@ -7,13 +7,13 @@ import java.util.List;
  */
 public class Reviews {
 
-    private List<Results> results;
+    private List<Result> results;
 
-    public List<Results> getResults() {
+    public List<Result> getResults() {
         return results;
     }
 
-    public class Results {
+    public class Result {
         private String author;
         private String content;
 

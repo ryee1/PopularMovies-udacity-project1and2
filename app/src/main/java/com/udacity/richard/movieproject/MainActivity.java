@@ -1,11 +1,11 @@
 package com.udacity.richard.movieproject;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.udacity.richard.movieproject.data.MoviesContract;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback{
 
@@ -49,18 +49,18 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     }
 
     @Override
-    public void onItemSelected(Uri movieIdUri) {
-
-        Log.e(LOG_TAG, "onItemSelected without ifelse");
+    public void onItemSelected(Long movieId) {
         if(getResources().getBoolean(R.bool.twopane)){
-            Log.e(LOG_TAG, "onItemSelected");
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_fragment_container, DetailFragment.newInstance(movieIdUri),
+                    .replace(R.id.detail_fragment_container, DetailFragment.newInstance(
+                                    MoviesContract.MoviesListContract.buildMovieSelectionUri(movieId)
+                            ),
                             DETAIL_FRAGMENT_TAG)
                     .commit();
         }
         else{
-            startActivity(DetailActivity.newIntent(this, movieIdUri));
+            startActivity(DetailActivity.newIntent(this,
+                    MoviesContract.MoviesListContract.buildMovieSelectionUri(movieId)));
         }
     }
 }

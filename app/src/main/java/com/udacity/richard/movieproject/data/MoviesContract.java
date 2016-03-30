@@ -9,6 +9,7 @@ import android.provider.BaseColumns;
  */
 public class MoviesContract {
 
+    private static final String LOG_TAG = MoviesContract.class.getSimpleName();
     public static final String CONTENT_AUTHORITY = "com.udacity.richard.movieproject";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
@@ -19,7 +20,6 @@ public class MoviesContract {
         public static final String CATEGORY_POPULAR = "popular";
         public static final String CATEGORY_TOP_RATED = "top_rated";
         public static final String CATEGORY_FAVORITES = "favorites";
-
         public static final Uri CONTENT_URI = BASE_CONTENT_URI
                 .buildUpon()
                 .appendPath(PATH_MOVIES_LIST)
