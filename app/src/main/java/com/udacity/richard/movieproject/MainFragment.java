@@ -10,9 +10,14 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.udacity.richard.movieproject.sync.MoviesSyncAdapter;
 
@@ -30,8 +35,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private static final String LOG_TAG = MainFragment.class.getSimpleName();
-    private static final int MOVIES_LIST_LOADER = 0;
+    private static final int POPULAR_LIST_LOADER = 0;
+    private static final int TOP_RATED_LIST_LOADER = 1;
+    private static final int FAVORITES_LOADER = 2;
     private int mPosition;
+
+    private TextView mToolbarTitle;
 
     private static final String[] MOVIES_LIST_COLUMNS = {
             MoviesListContract.COLUMN_POSTER_PATH,
@@ -48,8 +57,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIES_LIST_LOADER, null, this);
+        getLoaderManager().initLoader(POPULAR_LIST_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -58,6 +73,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                              Bundle savedInstanceState) {
 
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
+        mToolbarTitle = (TextView) getActivity().findViewById(R.id.main_toolbar_title);
+        if(mToolbarTitle == null){
+            Log.e(LOG_TAG, "null toolbar");
+        }
         RecyclerView rVMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
 
         mMovieListAdapter = new MovieListAdapter(getContext(), new MovieListAdapter.MovieListAdapterOnClickHandler(){
@@ -77,8 +96,44 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.menu_sort_popularity:
+                getLoaderManager().restartLoader(POPULAR_LIST_LOADER, null, this);
+                break;
+            case R.id.menu_sort_rating:
+                getLoaderManager().restartLoader(TOP_RATED_LIST_LOADER, null, this);
+                break;
+            case R.id.menu_sort_favorites:
+                getLoaderManager().restartLoader(FAVORITES_LOADER, null, this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri categoryMoviesList = MoviesListContract.buildTopRatedListUri();
+        Uri categoryMoviesList;
+        switch(id){
+            case POPULAR_LIST_LOADER:
+                categoryMoviesList = MoviesListContract.buildPopularListUri();
+                mToolbarTitle.setText(R.string.toolbar_popular_movies_title);
+                break;
+            case TOP_RATED_LIST_LOADER:
+                categoryMoviesList = MoviesListContract.buildTopRatedListUri();
+                mToolbarTitle.setText(R.string.toolbar_top_rated_movies_title);
+                break;
+            case FAVORITES_LOADER:
+                categoryMoviesList = MoviesListContract.buildFavoritesListUri();
+                mToolbarTitle.setText(R.string.toolbar_favorites_title);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown loader id: " + id);
+        }
 
         return new CursorLoader(getActivity(),
                 categoryMoviesList,
@@ -90,6 +145,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
         mMovieListAdapter.swapCursor(data);
     }
 

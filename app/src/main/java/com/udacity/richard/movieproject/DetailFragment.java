@@ -53,7 +53,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mOverView;
     private Button mFavoritesButton;
     private ImageView mPoster;
-
+    private TextView mToolbarTitle;
     private LinearLayout mReviewsContainer;
     private LinearLayout mVideosContainer;
 
@@ -87,6 +87,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mOverView = (TextView) view.findViewById(R.id.detail_overview_textview);
         mPoster = (ImageView) view.findViewById(R.id.detail_poster);
         mFavoritesButton = (Button) view.findViewById(R.id.detail_favorites_button);
+        mToolbarTitle = (TextView) getActivity().findViewById(R.id.main_toolbar_title);
 
         mVideosContainer = (LinearLayout) view.findViewById(R.id.video_container);
         mReviewsContainer = (LinearLayout) view.findViewById(R.id.review_container);
@@ -215,6 +216,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     .fitCenter()
                     .into(mPoster);
             mTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
+            mToolbarTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
             mVoteAverage.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_VOTE_AVERAGE))
                     + "/10");
             mVoteCount.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_VOTE_COUNT)));
@@ -224,8 +226,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             if (data.getInt(data.getColumnIndex(MoviesListContract.COLUMN_IS_FAVORITES)) == 0) {
                 mFavoritesButton.setText(R.string.detail_button_add_favorites);
+                mFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        modifyFavoritesOnClick(1);
+                    }
+                });
             } else {
                 mFavoritesButton.setText(R.string.detail_button_remove_favorites);
+                mFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        modifyFavoritesOnClick(0);
+                    }
+                });
             }
 
             Gson gson = new Gson();
@@ -248,6 +262,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 //TODO add null favorites view
             }
         }
+    }
+
+    private void modifyFavoritesOnClick(int setFavorites) {
+        ContentValues cv = new ContentValues();
+        cv.put(MoviesListContract.COLUMN_IS_FAVORITES, setFavorites);
+        getContext().getContentResolver().update(
+                MoviesListContract.CONTENT_URI,
+                cv,
+                MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
+                null
+        );
     }
 
     @Override

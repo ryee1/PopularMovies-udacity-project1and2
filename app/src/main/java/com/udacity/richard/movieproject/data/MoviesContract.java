@@ -50,6 +50,9 @@ public class MoviesContract {
         public static Uri buildTopRatedListUri(){
             return CONTENT_URI.buildUpon().appendPath(CATEGORY_TOP_RATED).build();
         }
+        public static Uri buildFavoritesListUri(){
+            return CONTENT_URI.buildUpon().appendPath(CATEGORY_FAVORITES).build();
+        }
 
         public static Uri buildMovieSelectionUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

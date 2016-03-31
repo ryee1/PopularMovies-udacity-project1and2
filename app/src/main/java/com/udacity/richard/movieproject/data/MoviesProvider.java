@@ -29,11 +29,10 @@ public class MoviesProvider extends ContentProvider {
         final String authority = MoviesContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST, MOVIES_LIST);
-
-        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/#", MOVIES_SELECTION);
-        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/*", MOVIES_LIST_CATEGORY);
         matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/" +
                 MoviesContract.MoviesListContract.CATEGORY_FAVORITES, MOVIES_FAVORITES);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/#", MOVIES_SELECTION);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES_LIST + "/*", MOVIES_LIST_CATEGORY);
         return matcher;
     }
 
@@ -56,7 +55,7 @@ public class MoviesProvider extends ContentProvider {
         return mOpenHelper.getReadableDatabase().query(
                 MoviesContract.MoviesListContract.TABLE_NAME,
                 projection,
-                MoviesContract.MoviesListContract.CATEGORY_FAVORITES + " = 1",
+                MoviesContract.MoviesListContract.COLUMN_IS_FAVORITES+ " = 1",
                 null,
                 null,
                 null,
