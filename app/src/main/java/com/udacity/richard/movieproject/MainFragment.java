@@ -104,17 +104,32 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.menu_sort_popularity:
+                clearOtherLoaders(POPULAR_LIST_LOADER);
                 getLoaderManager().restartLoader(POPULAR_LIST_LOADER, null, this);
                 break;
             case R.id.menu_sort_rating:
+                clearOtherLoaders(TOP_RATED_LIST_LOADER);
                 getLoaderManager().restartLoader(TOP_RATED_LIST_LOADER, null, this);
                 break;
             case R.id.menu_sort_favorites:
+                clearOtherLoaders(FAVORITES_LOADER);
                 getLoaderManager().restartLoader(FAVORITES_LOADER, null, this);
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void clearOtherLoaders(int loaderToKeep){
+        LoaderManager lm = getLoaderManager();
+        if(POPULAR_LIST_LOADER != loaderToKeep){
+            lm.destroyLoader(POPULAR_LIST_LOADER);
+        }
+        if(TOP_RATED_LIST_LOADER != loaderToKeep){
+            lm.destroyLoader(TOP_RATED_LIST_LOADER);
+        }
+        if(FAVORITES_LOADER != loaderToKeep){
+            lm.destroyLoader(FAVORITES_LOADER);
+        }
+    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri categoryMoviesList;
@@ -145,7 +160,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
+        Log.e(LOG_TAG, "Loader tag: " + loader.getId());
         mMovieListAdapter.swapCursor(data);
     }
 

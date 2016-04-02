@@ -42,13 +42,32 @@ public class MoviesProvider extends ContentProvider {
     private static final String sMoviesListTopRatedSelection =
             MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED + "= 1";
 
-    private static void resetCategoryColumns(String category){
-
+    private void resetCategoryColumns(){
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(MoviesContract.MoviesListContract.COLUMN_IS_POPULAR, 0);
+        cv.put(MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED, 0);
+        db.update(
+                MoviesContract.MoviesListContract.TABLE_NAME,
+                cv,
+                null,
+                null
+        );
     }
 
     //Check for and remove row from table if all category columns and favorites column are zero
-    private static void cleanDatabase(){
-
+    private void cleanDatabase(){
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.delete(
+                MoviesContract.MoviesListContract.TABLE_NAME,
+                " ( " +
+                MoviesContract.MoviesListContract.COLUMN_IS_FAVORITES + " = 0 or " +
+                        MoviesContract.MoviesListContract.COLUMN_IS_FAVORITES + " is null"
+                + " ) and " +
+                        MoviesContract.MoviesListContract.COLUMN_IS_POPULAR + " = 0 and " +
+                        MoviesContract.MoviesListContract.COLUMN_IS_TOP_RATED + " = 0",
+                null
+        );
     }
 
     private Cursor getMoviesFavorites(Uri uri, String[] projection, String sortOrder){
@@ -73,11 +92,11 @@ public class MoviesProvider extends ContentProvider {
                 null
         );
     }
-    private Cursor getMoviesListAll(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getMoviesListAll(Uri uri, String[] projection, String selection,String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 MoviesContract.MoviesListContract.TABLE_NAME,
                 projection,
-                null,
+                selection,
                 null,
                 null,
                 null,
@@ -124,7 +143,7 @@ public class MoviesProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             case MOVIES_LIST:
-                retCursor = getMoviesListAll(uri, projection, sortOrder);
+                retCursor = getMoviesListAll(uri, projection, selection, sortOrder);
                 Log.e(LOG_TAG, "Cursor count" + retCursor.getCount());
                 break;
             case MOVIES_LIST_CATEGORY:
@@ -193,16 +212,15 @@ public class MoviesProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         MoviesDbHelper dbHelper = new MoviesDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Uri returnUri;
         int _id;
-        switch (sUriMatcher.match(uri)) {
-            case MOVIES_LIST:
+//        switch (sUriMatcher.match(uri)) {
+//            case MOVIES_LIST:
                 _id = db.update(MoviesContract.MoviesListContract.TABLE_NAME, values, selection,
                         selectionArgs);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
+//                break;
+//            default:
+//                throw new UnsupportedOperationException("Unknown uri: " + uri);
+//        }
         if (_id != 0)
             getContext().getContentResolver().notifyChange(uri, null);
         return _id;
@@ -216,6 +234,8 @@ public class MoviesProvider extends ContentProvider {
             case MOVIES_LIST:
                 db.beginTransaction();
                 int returnCount = 1;
+
+                resetCategoryColumns();
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insertWithOnConflict(MoviesContract.MoviesListContract.TABLE_NAME,
@@ -230,8 +250,11 @@ public class MoviesProvider extends ContentProvider {
                                             (MoviesContract.MoviesListContract.COLUMN_MOVIE_ID))});
                         }
                     }
+                    cleanDatabase();
+                    Log.e(LOG_TAG, "transaction successful");
                     db.setTransactionSuccessful();
                 } finally {
+                    Log.e(LOG_TAG, "transaction ended");
                     db.endTransaction();
                 }
                 getContext().getContentResolver().notifyChange(uri, null);

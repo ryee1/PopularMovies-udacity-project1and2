@@ -2,6 +2,7 @@ package com.udacity.richard.movieproject;
 
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,20 +43,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public static final String DETAIL_URI = "com.udacity.richard.movieproject.detail_uri";
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     private static final int MOVIE_DETAIL_LOADER = 0;
     private long mMovieId;
 
     private TextView mTitle;
     private TextView mVoteAverage;
-    private TextView mVoteCount;
     private TextView mReleaseDate;
     private TextView mOverView;
     private Button mFavoritesButton;
     private ImageView mPoster;
     private TextView mToolbarTitle;
-    private LinearLayout mReviewsContainer;
-    private LinearLayout mVideosContainer;
 
     public static DetailFragment newInstance(Parcelable uri) {
         DetailFragment f = new DetailFragment();
@@ -81,16 +80,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         mTitle = (TextView) view.findViewById(R.id.detail_title_textview);
-        mVoteCount = (TextView) view.findViewById(R.id.detail_vote_count_textview);
         mVoteAverage = (TextView) view.findViewById(R.id.detail_vote_average_textview);
         mReleaseDate = (TextView) view.findViewById(R.id.detail_release_date_textview);
         mOverView = (TextView) view.findViewById(R.id.detail_overview_textview);
         mPoster = (ImageView) view.findViewById(R.id.detail_poster);
         mFavoritesButton = (Button) view.findViewById(R.id.detail_favorites_button);
         mToolbarTitle = (TextView) getActivity().findViewById(R.id.main_toolbar_title);
-
-        mVideosContainer = (LinearLayout) view.findViewById(R.id.video_container);
-        mReviewsContainer = (LinearLayout) view.findViewById(R.id.review_container);
 
         mMovieId = MoviesListContract.getMovieIdFromUri(
                 (Uri) getArguments().getParcelable(DETAIL_URI));
@@ -109,10 +104,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                                 MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
                                 null
                         );
+                        addReviews(response.body().getResults());
                     }
 
                     @Override
                     public void onFailure(Call<Reviews> call, Throwable t) {
+                        Cursor c = getContext().getContentResolver()
+                                .query(
+                                        MoviesListContract.CONTENT_URI,
+                                        new String[]{MoviesListContract.COLUMNS_REVIEWS},
+                                        MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
+                                        null,
+                                        null
+                                );
+                        if(c == null || !c.moveToFirst()){
+                            Log.e(LOG_TAG, "Empty Cursor onFailure");
+                            return;
+                        }
+                        Gson gson = new Gson();
+                        addReviews(gson.fromJson(c.getString(c.getColumnIndex(MoviesListContract.COLUMNS_REVIEWS)),
+                                Reviews.class).getResults());
+                        c.close();
                     }
                 });
 
@@ -130,11 +142,27 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                                 MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
                                 null
                         );
+                        addVideos(response.body().getResults());
                     }
 
                     @Override
                     public void onFailure(Call<Videos> call, Throwable t) {
-                        Log.e(LOG_TAG, "video retrieval failure");
+                        Cursor c = getContext().getContentResolver()
+                                .query(
+                                        MoviesListContract.CONTENT_URI,
+                                        new String[]{MoviesListContract.COLUMN_VIDEOS},
+                                        MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
+                                        null,
+                                        null
+                        );
+                        if(c == null || !c.moveToFirst()){
+                            Log.e(LOG_TAG, "Empty Cursor onFailure");
+                            return;
+                        }
+                        Gson gson = new Gson();
+                        addVideos(gson.fromJson(c.getString(c.getColumnIndex(MoviesListContract.COLUMN_VIDEOS)),
+                                Videos.class).getResults());
+                        c.close();
                     }
                 });
         return view;
@@ -198,10 +226,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Intent intent = new Intent(Intent.ACTION_VIEW);
-//                    intent.setData(Uri.parse(YOUTUBE_BASE_URL + key));
-//                    Log.e(TAG, (Uri.parse(YOUTUBE_BASE_URL + key)).toString());
-//                    startActivity(intent);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(YOUTUBE_BASE_URL + key));
+                    Log.e(LOG_TAG, (Uri.parse(YOUTUBE_BASE_URL + key)).toString());
+                    startActivity(intent);
                 }
             });
             videoContainer.addView(button);
@@ -216,14 +244,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     .fitCenter()
                     .into(mPoster);
             mTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
-            mToolbarTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
-            mVoteAverage.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_VOTE_AVERAGE))
+            mVoteAverage.setText("Rating: " + data.getString(data.getColumnIndex(MoviesListContract.COLUMN_VOTE_AVERAGE))
                     + "/10");
-            mVoteCount.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_VOTE_COUNT)));
             mReleaseDate.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_RELEASE_DATE))
                     .substring(0, 4));
             mOverView.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_OVERVIEW)));
 
+            if(!getResources().getBoolean(R.bool.twopane)){
+                mToolbarTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
+
+            }
             if (data.getInt(data.getColumnIndex(MoviesListContract.COLUMN_IS_FAVORITES)) == 0) {
                 mFavoritesButton.setText(R.string.detail_button_add_favorites);
                 mFavoritesButton.setOnClickListener(new View.OnClickListener() {
@@ -240,26 +270,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                         modifyFavoritesOnClick(0);
                     }
                 });
-            }
-
-            Gson gson = new Gson();
-            Reviews reviews = gson.fromJson(data.getString(data
-                    .getColumnIndex(MoviesListContract.COLUMNS_REVIEWS)), Reviews.class);
-            if (reviews != null)
-                addReviews(reviews.getResults());
-            else {
-                //TODO add view that says "No reviews for this movie yet"
-            }
-
-            Videos videos = gson.fromJson(data.getString(
-                    data.getColumnIndex(MoviesListContract.COLUMN_VIDEOS)), Videos.class);
-
-            if(videos != null){
-                addVideos(videos.getResults());
-            }
-            else{
-                Log.e(LOG_TAG, "video is null");
-                //TODO add null favorites view
             }
         }
     }
