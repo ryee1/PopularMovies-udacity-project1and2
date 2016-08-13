@@ -2,6 +2,7 @@ package com.udacity.richard.movieproject;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -55,6 +56,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private Button mFavoritesButton;
     private ImageView mPoster;
     private TextView mToolbarTitle;
+    private Call<Reviews> mReviewCall;
+    private Call<Videos> mVideoCall;
 
     public static DetailFragment newInstance(Parcelable uri) {
         DetailFragment f = new DetailFragment();
@@ -79,6 +82,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        final Context context = getContext();
+
         mTitle = (TextView) view.findViewById(R.id.detail_title_textview);
         mVoteAverage = (TextView) view.findViewById(R.id.detail_vote_average_textview);
         mReleaseDate = (TextView) view.findViewById(R.id.detail_release_date_textview);
@@ -90,15 +96,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mMovieId = MoviesListContract.getMovieIdFromUri(
                 (Uri) getArguments().getParcelable(DETAIL_URI));
 
-        RestAdapter.getAdapter().getReviews(mMovieId, ApiKey.API_KEY)
-                .enqueue(new Callback<Reviews>() {
+        mVideoCall = RestAdapter.getAdapter().getVideos(mMovieId, ApiKey.API_KEY);
+        mReviewCall = RestAdapter.getAdapter().getReviews(mMovieId, ApiKey.API_KEY);
+        mReviewCall.enqueue(new Callback<Reviews>() {
                     @Override
                     public void onResponse(Call<Reviews> call, Response<Reviews> response) {
                         Gson gson = new Gson();
                         ContentValues cv = new ContentValues();
                         cv.put(MoviesListContract.COLUMNS_REVIEWS, gson.toJson(response.body()));
 
-                        getContext().getContentResolver().update(
+                        context.getContentResolver().update(
                                 MoviesListContract.CONTENT_URI,
                                 cv,
                                 MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
@@ -109,7 +116,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
                     @Override
                     public void onFailure(Call<Reviews> call, Throwable t) {
-                        Cursor c = getContext().getContentResolver()
+                        if(call.isCanceled()){
+                            Log.e(LOG_TAG, "review call canceled");
+                            return;
+                        }
+                        Cursor c = context.getContentResolver()
                                 .query(
                                         MoviesListContract.CONTENT_URI,
                                         new String[]{MoviesListContract.COLUMNS_REVIEWS},
@@ -128,15 +139,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     }
                 });
 
-        RestAdapter.getAdapter().getVideos(mMovieId, ApiKey.API_KEY)
-                .enqueue(new Callback<Videos>() {
+        mVideoCall.enqueue(new Callback<Videos>() {
                     @Override
                     public void onResponse(Call<Videos> call, Response<Videos> response) {
                         Gson gson = new Gson();
                         ContentValues cv = new ContentValues();
                         cv.put(MoviesListContract.COLUMN_VIDEOS, gson.toJson(response.body()));
 
-                        getContext().getContentResolver().update(
+                        context.getContentResolver().update(
                                 MoviesListContract.CONTENT_URI,
                                 cv,
                                 MoviesListContract.COLUMN_MOVIE_ID + " = " + mMovieId,
@@ -147,7 +157,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
                     @Override
                     public void onFailure(Call<Videos> call, Throwable t) {
-                        Cursor c = getContext().getContentResolver()
+                        if(call.isCanceled()){
+                            Log.e(LOG_TAG, "Video call canceled");
+                            return;
+                        }
+                        Cursor c = context.getContentResolver()
                                 .query(
                                         MoviesListContract.CONTENT_URI,
                                         new String[]{MoviesListContract.COLUMN_VIDEOS},
@@ -167,6 +181,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 });
         return view;
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -293,5 +308,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onPause() {
         super.onPause();
+        mVideoCall.cancel();
+        mReviewCall.cancel();
     }
 }

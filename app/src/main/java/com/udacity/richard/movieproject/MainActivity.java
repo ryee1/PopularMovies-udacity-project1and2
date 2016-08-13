@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
