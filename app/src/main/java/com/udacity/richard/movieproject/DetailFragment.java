@@ -55,7 +55,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mOverView;
     private Button mFavoritesButton;
     private ImageView mPoster;
-    private TextView mToolbarTitle;
     private Call<Reviews> mReviewCall;
     private Call<Videos> mVideoCall;
 
@@ -91,7 +90,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mOverView = (TextView) view.findViewById(R.id.detail_overview_textview);
         mPoster = (ImageView) view.findViewById(R.id.detail_poster);
         mFavoritesButton = (Button) view.findViewById(R.id.detail_favorites_button);
-        mToolbarTitle = (TextView) getActivity().findViewById(R.id.main_toolbar_title);
 
         mMovieId = MoviesListContract.getMovieIdFromUri(
                 (Uri) getArguments().getParcelable(DETAIL_URI));
@@ -265,10 +263,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     .substring(0, 4));
             mOverView.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_OVERVIEW)));
 
-            if(!getResources().getBoolean(R.bool.twopane)){
-                mToolbarTitle.setText(data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE)));
-
-            }
+//            if(!getResources().getBoolean(R.bool.twopane)){
+//                getActivity().setTitle((data.getString(data.getColumnIndex(MoviesListContract.COLUMN_TITLE))));
+//
+//            }
             if (data.getInt(data.getColumnIndex(MoviesListContract.COLUMN_IS_FAVORITES)) == 0) {
                 mFavoritesButton.setText(R.string.detail_button_add_favorites);
                 mFavoritesButton.setOnClickListener(new View.OnClickListener() {

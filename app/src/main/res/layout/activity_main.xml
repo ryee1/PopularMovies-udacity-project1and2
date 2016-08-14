@@ -13,11 +13,6 @@
         android:layout_height="?attr/actionBarSize"
         style="@style/Toolbar"
         android:background="#b42828">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/main_toolbar_title"
-            android:gravity="center_vertical"/>
     </android.support.v7.widget.Toolbar>
     <FrameLayout
         android:layout_width="match_parent"

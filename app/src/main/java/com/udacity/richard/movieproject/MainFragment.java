@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.udacity.richard.movieproject.sync.MoviesSyncAdapter;
 
@@ -39,8 +38,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final int TOP_RATED_LIST_LOADER = 1;
     private static final int FAVORITES_LOADER = 2;
     private int mPosition;
-
-    private TextView mToolbarTitle;
 
     private static final String[] MOVIES_LIST_COLUMNS = {
             MoviesListContract.COLUMN_POSTER_PATH,
@@ -73,10 +70,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                              Bundle savedInstanceState) {
 
         View view =  inflater.inflate(R.layout.fragment_main, container, false);
-        mToolbarTitle = (TextView) getActivity().findViewById(R.id.main_toolbar_title);
-        if(mToolbarTitle == null){
-            Log.e(LOG_TAG, "null toolbar");
-        }
+
         RecyclerView rVMovieList = (RecyclerView) view.findViewById(R.id.rvMovieList);
 
         mMovieListAdapter = new MovieListAdapter(getContext(), new MovieListAdapter.MovieListAdapterOnClickHandler(){
@@ -136,15 +130,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         switch(id){
             case POPULAR_LIST_LOADER:
                 categoryMoviesList = MoviesListContract.buildPopularListUri();
-                mToolbarTitle.setText(R.string.toolbar_popular_movies_title);
+                getActivity().setTitle(R.string.toolbar_popular_movies_title);
                 break;
             case TOP_RATED_LIST_LOADER:
                 categoryMoviesList = MoviesListContract.buildTopRatedListUri();
-                mToolbarTitle.setText(R.string.toolbar_top_rated_movies_title);
+                getActivity().setTitle(R.string.toolbar_top_rated_movies_title);
                 break;
             case FAVORITES_LOADER:
                 categoryMoviesList = MoviesListContract.buildFavoritesListUri();
-                mToolbarTitle.setText(R.string.toolbar_favorites_title);
+                getActivity().setTitle(R.string.toolbar_favorites_title);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown loader id: " + id);
